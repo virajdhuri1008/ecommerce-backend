@@ -4,19 +4,16 @@ const path = require("path");
 
 const filePath = path.join(__dirname, "../data/products.json");
 
+// READ DATA
 const readData = () => {
   try {
-    if (!fs.existsSync(filePath)) {
-      return [];
-    }
-    const data = fs.readFileSync(filePath, "utf8");
-    return data.trim() ? JSON.parse(data) : [];
+    return JSON.parse(fs.readFileSync(filePath));
   } catch (err) {
-    console.error(err);
     return [];
   }
 };
 
+// WRITE DATA
 const writeData = (data) => {
   try {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
@@ -25,7 +22,13 @@ const writeData = (data) => {
   }
 };
 
-// ADD PRODUCT
+// ✅ GET ALL PRODUCTS (VERY IMPORTANT)
+router.get("/", (req, res) => {
+  const products = readData();
+  res.json(products);
+});
+
+// ✅ ADD PRODUCT
 router.post("/", (req, res) => {
   const products = readData();
 
@@ -40,11 +43,10 @@ router.post("/", (req, res) => {
 
   products.push(newProduct);
   writeData(products);
-
   res.json(newProduct);
 });
 
-// UPDATE PRODUCT
+// ✅ UPDATE PRODUCT
 router.put("/:id", (req, res) => {
   let products = readData();
   products = products.map(p =>
@@ -54,7 +56,7 @@ router.put("/:id", (req, res) => {
   res.json({ message: "Product updated" });
 });
 
-// DELETE PRODUCT
+// ✅ DELETE PRODUCT
 router.delete("/:id", (req, res) => {
   const products = readData().filter(p => p.id != req.params.id);
   writeData(products);
