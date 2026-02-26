@@ -7,24 +7,23 @@ const filePath = path.join(__dirname, "../data/products.json");
 const readData = () => {
   try {
     if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, "[]");
       return [];
     }
     const data = fs.readFileSync(filePath, "utf8");
     return data.trim() ? JSON.parse(data) : [];
   } catch (err) {
-    console.error("Read error:", err);
+    console.error(err);
     return [];
   }
 };
 
-const writeData = (data) =>
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-
-// GET PRODUCTS
-router.get("/", (req, res) => {
-  res.json(readData());
-});
+const writeData = (data) => {
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error("Write failed:", err);
+  }
+};
 
 // ADD PRODUCT
 router.post("/", (req, res) => {
